@@ -17,6 +17,10 @@ app.get("/",(req,res) => {
 
 app.use('/api/user',userRoutes)
 
+//error handling functions to handle false routes or middleware
+app.use(notFound)
+app.use(errorHandler)
+
 const PORT = process.env.PORT || 3000
 app.listen(PORT,() => {
     console.log(chalk.yellow.bold(`Server is running at port ${PORT}`));
