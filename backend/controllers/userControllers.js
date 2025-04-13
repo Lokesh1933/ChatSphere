@@ -36,4 +36,9 @@ const registerUser =asyncHandler(async (req,res) => {
         throw new Err("Failed to Create the User")
     }
 })
+
+const authUser = asyncHandler(async (req,res) => {
+    const {email, password} = req.body
+    const user  = await User.findOne({email})
+})
 export {registerUser}
