@@ -18,10 +18,15 @@ const userSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.methods.matchPassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword,this.password)
+}
+
 //before saving do something we want to encrypt user password to be stored in databse and not in plain format
 //next is a middleware
 userSchema.pre('save',async function (next) {
-  if(!this.modified) {
+  if(!this.isModified) {
     next()
   }
   //before saving user tyo database encrypt the password
