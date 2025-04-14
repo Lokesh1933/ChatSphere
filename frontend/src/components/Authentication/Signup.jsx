@@ -38,6 +38,8 @@ const Signup = () => {
     if(pics.type === "image/jpeg" || pics.type === "image/png"){
       const data = new FormData()
       data.append("file",pics)
+      data.append("upload_preset","ChatSphere")
+      data.append()
     }
   }
   const submitHandler = () => {}
