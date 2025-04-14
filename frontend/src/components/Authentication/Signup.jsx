@@ -9,6 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { useToast } from '@chakra-ui/react'
 
 const Signup = () => {
   const [name, setName] = useState();
@@ -16,10 +17,29 @@ const Signup = () => {
   const [password, setPassword] = useState();
   const [confirmpassword, setConfirmPassword] = useState();
   const [pic, setPic] = useState();
+  const [loading,setLoading] = useState(false)
   const [show, setShow] = useState(false)
 
+  const toast = useToast()
+
   const handleClick = () => setShow(!show)
-  const postDetails = (pics) => {}
+  const postDetails = (pics) => {
+    setLoading(true)
+    if(pics === undefined){
+      toast({
+        title: 'Please Select An Image!',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+        position: 'bottom',
+      })
+      return
+    }
+    if(pics.type === "image/jpeg" || pics.type === "image/png"){
+      const data = new FormData()
+      data.append("file",pics)
+    }
+  }
   const submitHandler = () => {}
 
   return (

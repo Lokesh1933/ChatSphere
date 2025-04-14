@@ -4,6 +4,7 @@ import chats from "./data/data.js"
 import connectDB from "./config/db.js"
 import chalk from "chalk"
 import userRoutes from "./routes/userRoutes.js"
+import { notFound, errorHandler } from "./middlewares/errorMiddleware.js"
 
 dotenv.config()
 connectDB()
