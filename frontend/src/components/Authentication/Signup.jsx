@@ -39,7 +39,30 @@ const Signup = () => {
       const data = new FormData()
       data.append("file",pics)
       data.append("upload_preset","ChatSphere")
-      data.append()
+      data.append("cloud_name","dlyywgd5s")
+      fetch("https://api.cloudinary.com/v1_1/dlyywgd5s/image/upload",{
+        method: 'post',
+        body: data,
+      }).then((res) => res.json())
+        .then(data => {
+          setPic(data.url.toString())
+          console.log(data.url.toString())
+          setLoading(false)
+        })
+        .catch((err) => {
+          console.log(err)
+          setLoading(false)
+        })
+    } else {
+      toast({
+        title: 'Please Select An Image!',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+        position: 'bottom',
+      })
+      setLoading(false)
+      return
     }
   }
   const submitHandler = () => {}
@@ -114,6 +137,7 @@ const Signup = () => {
         width="100%"
         style={{marginTop: 15}}
         onClick={submitHandler}
+        isLoading={loading}
       >
         Sign Up
       </Button>
