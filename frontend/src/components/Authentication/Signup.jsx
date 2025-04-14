@@ -65,7 +65,30 @@ const Signup = () => {
       return
     }
   }
-  const submitHandler = () => {}
+  const submitHandler = async () => {
+    setLoading(true)
+    if(!name || !email || !password || !confirmpassword){
+      toast({
+        title: 'Please Fill all the Fields',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+        position: 'bottom',
+      })
+      setLoading(false)
+      return
+    }
+    if(password !== confirmpassword){
+      toast({
+        title: 'Passwords Do Not Match',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+        position: 'bottom',
+      })
+      return
+    }
+  }
 
   return (
     <VStack spacing="5px">
