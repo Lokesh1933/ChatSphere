@@ -73,6 +73,7 @@ const Signup = () => {
     }
   }
   const submitHandler = async () => {
+    console.log("Submit handler called");
     setLoading(true)
     if(!name || !email || !password || !confirmpassword){
       toast({
@@ -114,6 +115,7 @@ const Signup = () => {
       //if user has successfully logged in we push him to chats page
       history.push('/chats')
     } catch (error) {
+      console.log("🛑 Error response:", error.response);
       toast({
         title: 'Error Occured!',
         description:error.response.data.message,
@@ -127,6 +129,13 @@ const Signup = () => {
   }
 
   return (
+    <form
+    onSubmit={(e) => {
+      e.preventDefault();
+      submitHandler();
+    }}
+    style={{ width: "100%" }}
+  >
     <VStack spacing="5px">
       <FormControl id="first-name" isRequired>
         <FormLabel>Name</FormLabel>
@@ -195,12 +204,14 @@ const Signup = () => {
         colorScheme="blue"
         width="100%"
         style={{marginTop: 15}}
-        onClick={submitHandler}
+        // onClick={submitHandler}
+        type="submit"
         isLoading={loading}
       >
         Sign Up
       </Button>
     </VStack>
+    </form>
   );
 };
 
