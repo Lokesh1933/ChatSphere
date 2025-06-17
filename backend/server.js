@@ -15,14 +15,17 @@ app.use(express.json())
 app.get("/",(req,res) => {
     res.send("hello")
 })
+//test routes
 
-app.get("/api/chat", (req,res) => {
-    res.send(chats)
-})
-app.get("/api/chat/:id", (req,res) => {
-    const singleChat = chats.find((c) => c._id === req.params.id)
-    res.send(singleChat) 
-})
+// app.get("/api/chat", (req,res) => {
+//     res.send(chats)
+// })
+// app.get("/api/chat/:id", (req,res) => {
+//     const singleChat = chats.find((c) => c._id === req.params.id)
+//     res.send(singleChat) 
+// })
+
+app.use("/api/user", userRoutes)
 
 const PORT = process.env.PORT || 3000
 //error handling functions to handle false routes or middleware
