@@ -1,13 +1,13 @@
 import asyncHandler from "express-async-handler"
+//express async handler handles all errors automatically 
 import User from "../models/userModel.js"
 import generateToken from "../config/generateToken.js"
 const registerUser =asyncHandler(async (req,res) => {
     const {name, email, password, pic} =req.body
 
-    console.log("📥 Incoming register request:", { name, email, password, pic });
+    // console.log(" register request:", { name, email, password, pic });
 
     if(!name || !email || !password){
-        console.log("❌ Missing fields in request");
         res.status(400)
         throw new Error("Please Enter All the Fields")
     }
