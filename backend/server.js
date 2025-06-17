@@ -16,13 +16,19 @@ app.get("/",(req,res) => {
     res.send("hello")
 })
 
-app.use('/api/user',userRoutes)
+app.get("/api/chat", (req,res) => {
+    res.send(chats)
+})
+app.get("/api/chat/:id", (req,res) => {
+    const singleChat = chats.find((c) => c._id === req.params.id)
+    res.send(singleChat) 
+})
 
+const PORT = process.env.PORT || 3000
 //error handling functions to handle false routes or middleware
 app.use(notFound)
 app.use(errorHandler)
 
-const PORT = process.env.PORT || 3000
 app.listen(PORT,() => {
     console.log(chalk.yellow.bold(`Server is running at port ${PORT}`));
 })
