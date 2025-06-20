@@ -32,7 +32,7 @@ const Signup = () => {
       toast({
         title: 'Please Select An Image!',
         status: 'warning',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: 'bottom',
       })
@@ -43,19 +43,41 @@ const Signup = () => {
       data.append("file",pics)
       data.append("upload_preset","ChatSphere")
       data.append("cloud_name","dlyywgd5s")
-      axios.post("https://api.cloudinary.com/v1_1/dlyywgd5s/image/upload", data)
-      .then((response) => {
-        console.log("Cloudinary response:", response);
-        setPic(response.data.url.toString());
-        setLoading(false);
-        toast({
-          title: "Image uploaded successfully!",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
+      // axios.post("https://api.cloudinary.com/v1_1/dlyywgd5s/image/upload", data)
+      fetch("https://api.cloudinary.com/v1_1/dlyywgd5s/image/upload", {
+        method: "POST",
+        body: data,
       })
+        // .then((response) => response.json())
+        // .then((data) => {
+        //   setPic(data.url.toString());
+        //   console.log(data.url.toString());
+        //   setLoading(false);
+        // })
+      .then((res) => res.json())
+        .then(data => {
+          setPic(data.url.toString());
+          console.log(data.url.toString());
+          setLoading(false);
+          toast({
+            status: "success",
+            title: "Image uploaded successfully!",
+            isClosable: true,
+            duration: 5000,
+            position: "bottom",
+          });
+        })
+      // .then((response) => {
+      //   setPic(response.data.url.toString());
+      //   setLoading(false);
+      //   toast({
+      //     title: "Image uploaded successfully!",
+      //     status: "success",
+      //     duration: 5000,
+      //     isClosable: true,
+      //     position: "bottom",
+      //   });
+      // })
       .catch((error) => {
         console.log("Cloudinary error:", error);
         setLoading(false);
@@ -73,7 +95,7 @@ const Signup = () => {
     }
   }
   const submitHandler = async () => {
-    console.log("Submit handler called");
+    // console.log("Submit handler called");
     setLoading(true)
     if(!name || !email || !password || !confirmpassword){
       toast({
@@ -204,7 +226,7 @@ const Signup = () => {
         colorScheme="blue"
         width="100%"
         style={{marginTop: 15}}
-        // onClick={submitHandler}
+        // onClick={submitHandler} //added it in the form better to handle submit there
         type="submit"
         isLoading={loading}
       >
