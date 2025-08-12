@@ -24,7 +24,6 @@ const Signup = () => {
 
   const toast = useToast()
   const history = useHistory()
-
   const handleClick = () => setShow(!show)
   const postDetails = (pics) => {
     setLoading(true)
@@ -101,7 +100,7 @@ const Signup = () => {
       toast({
         title: 'Please Fill all the Fields',
         status: 'warning',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: 'bottom',
       })
@@ -112,12 +111,13 @@ const Signup = () => {
       toast({
         title: 'Passwords Do Not Match',
         status: 'warning',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: 'bottom',
       })
       return
     }
+    //api request to store the below in daatbase
     try {
       const config = {
         headers: {
@@ -128,7 +128,7 @@ const Signup = () => {
       toast({
         title: 'Registration Succesful',
         status: 'success',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: 'bottom',
       })
@@ -137,12 +137,12 @@ const Signup = () => {
       //if user has successfully logged in we push him to chats page
       history.push('/chats')
     } catch (error) {
-      console.log("🛑 Error response:", error.response);
+      // console.log("Error response:", error.response);
       toast({
         title: 'Error Occured!',
         description:error.response.data.message,
         status: 'error',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: 'bottom',
       })
