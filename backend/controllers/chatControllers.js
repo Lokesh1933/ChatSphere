@@ -88,4 +88,20 @@ const createGroupChat = asyncHandler(async (req, res) => {
     }
 })
 
-export { accessChat, fetchChats , createGroupChat}
+const renameGroup = asyncHandler(async (req, res) => {
+    const { chatId, chatName } = req.body;
+    if (!chatId || !chatName) {
+        return res.status(400).send({ message: "Please fill all the fields" });
+    }
+    try {
+        const updatedChat = await Chat.findByIdAndUpdate(chatId, { chatName }, { new: true })
+        .populate("users", "-password")
+        .populate("groupAdmin", "-password")
+        res.status(200).json(updatedChat);
+    } catch (error) {
+        res.status(400);
+        throw new Error(error.message);
+    }
+})
+
+export { accessChat, fetchChats , createGroupChat, renameGroup };
