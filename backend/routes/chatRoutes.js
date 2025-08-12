@@ -1,6 +1,6 @@
 import express from 'express'
 import {protect} from '../middlewares/authMiddleware.js'
-import {accessChat,fetchChats,createGroupChat,renameGroup} from '../controllers/chatControllers.js'
+import {accessChat,fetchChats,createGroupChat,renameGroup,addToGroup,removeFromGroup} from '../controllers/chatControllers.js'
 const router = express.Router()
 //access or create chat
 router.route('/').post(protect,accessChat)
@@ -10,7 +10,7 @@ router.route('/group').post(protect,createGroupChat)
 // //rename the group
 router.route('/rename').put(protect,renameGroup)
 // //remove someone from group
-// router.route('/groupremove').put(protect,removeFromGroup)
+router.route('/groupremove').put(protect,removeFromGroup)
 // //add someone to group
-// router.route('/groupadd').put(protect,addToGroup)
+router.route('/groupadd').put(protect,addToGroup)
 export default router

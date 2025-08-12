@@ -104,4 +104,39 @@ const renameGroup = asyncHandler(async (req, res) => {
     }
 })
 
-export { accessChat, fetchChats , createGroupChat, renameGroup };
+const addToGroup = asyncHandler(async (req, res) => {
+    const { chatId, userId } = req.body;
+    if (!chatId || !userId) {
+        return res.status(400).send({ message: "Please fill all the fields" });
+    }
+    try {
+        const added = await Chat.findByIdAndUpdate(chatId, {
+            $push: { users: userId },
+        }, { new: true }) //return latest field
+        .populate("users", "-password")
+        .populate("groupAdmin", "-password");
+        res.status(200).json(added);
+    } catch (error) {
+        res.status(400);
+        throw new Error("chat not found");
+    }
+})
+
+const removeFromGroup = asyncHandler(async (req, res) => {
+    const { chatId, userId } = req.body;
+    if (!chatId || !userId) {
+        return res.status(400).send({ message: "Please fill all the fields" });
+    }
+    try {
+        const removed = await Chat.findByIdAndUpdate(chatId, {
+            $pull: { users: userId },
+        }, { new: true }) //return latest field
+        .populate("users", "-password")
+        .populate("groupAdmin", "-password");
+        res.status(200).json(removed);
+    } catch (error) {
+        res.status(400);
+        throw new Error("chat not found");
+    }
+})
+export { accessChat, fetchChats , createGroupChat, renameGroup, addToGroup, removeFromGroup };
