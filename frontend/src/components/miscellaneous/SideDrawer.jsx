@@ -48,9 +48,9 @@ import {
   Badge
 } from '@chakra-ui/react'
 import { FaSearch, FaBell, FaChevronDown, FaSignOutAlt, FaUser} from 'react-icons/fa'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ChatState } from '../../Context/ChatProvider'
-import { useHistory } from 'react-router-dom' // ✅ Add this import
+import { useHistory } from 'react-router-dom' 
 import axios from 'axios'
 import ProfileModal from './ProfileModal'
 import ChatLoading from '../ChatLoading'
@@ -67,15 +67,18 @@ const SideDrawer = () => {
   const toast = useToast()
   const history = useHistory() 
 
-  const handleSearch = async () => {
-    if (!search) {
+  const handleSearch = async (searchTerm = search) => {
+    if (!searchTerm.trim()) {
+      if (searchTerm === search) { // Only show toast when manually clicking Go
       toast({
         title: "Please Enter something in search",
         status: "warning",
-        duration: 3000,
+        duration: 1000,
         isClosable: true,
         position: "top-left",
       })
+    }
+      setSearchResult([])
       return
     }
 
@@ -86,11 +89,12 @@ const SideDrawer = () => {
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const { data } = await axios.get(`/api/user?search=${search}`, config)
+      const { data } = await axios.get(`/api/user?search=${searchTerm}`, config)
       setLoading(false)
       setSearchResult(data)
     } catch (error) {
       setLoading(false)
+      setSearchResult([])
       toast({
         title: "Error Occurred!",
         description: "Failed to load the search results",
@@ -102,6 +106,19 @@ const SideDrawer = () => {
     }
   }
 
+  // Auto-search with debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (search.length > 0) {
+        handleSearch(search)
+      } else {
+        setSearchResult([])
+      }
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [search])
+
   const accessChat = async (userId) => {
     try {
       setLoadingChat(true)
@@ -111,6 +128,7 @@ const SideDrawer = () => {
           Authorization: `Bearer ${user.token}`,
         },
       }
+      ///api/chat takes user id
       const { data } = await axios.post("/api/chat", { userId }, config)
       
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats])
@@ -301,6 +319,7 @@ const SideDrawer = () => {
                 mr={2}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 bg="gray.700"
                 borderColor="gray.600"
                 color="white"
@@ -309,7 +328,7 @@ const SideDrawer = () => {
                 _placeholder={{ color: "gray.400" }}
               />
               <Button
-                onClick={handleSearch}
+                onClick={() => handleSearch()}
                 bg="cyan.500"
                 _hover={{ 
                   bg: "cyan.400",
