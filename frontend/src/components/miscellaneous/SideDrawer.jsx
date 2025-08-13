@@ -53,6 +53,7 @@ import { ChatState } from '../../Context/ChatProvider'
 import { useHistory } from 'react-router-dom' // ✅ Add this import
 import axios from 'axios'
 import ProfileModal from './ProfileModal'
+import ChatLoading from '../ChatLoading'
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("")
@@ -296,7 +297,7 @@ const SideDrawer = () => {
           <DrawerBody>
             <Flex pb={2}>
               <Input
-                placeholder="Search by name or email..."
+                placeholder="Search by name or email"
                 mr={2}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -322,9 +323,45 @@ const SideDrawer = () => {
             </Flex>
             
             {loading ? (
-              <Flex justify="center" mt={4}>
-                <Spinner color="cyan.400" />
+              // <Flex justify="center" mt={4}>
+              //   <Spinner color="cyan.400" />
+              // </Flex>
+              <Flex 
+                justify="center" 
+                align="center" 
+                direction="column"
+                py={6}
+                gap={3}
+              >
+               <Box position="relative">
+                 <Spinner
+                   thickness="3px"
+                   emptyColor="gray.600"
+                   speed="0.8s"
+                   size="xl"
+                   color="cyan.400"
+                 />
+                 <Icon 
+                   as={FaSearch} 
+                   top="50%"
+                   left="50%"
+                   transform="translate(-50%, -50%)"
+                   color="cyan.400"
+                   boxSize={4}
+                   position="absolute"
+                 />
+               </Box>
+    
+               <Text 
+                   color="gray.400" 
+                   fontFamily="'Fira Code', monospace"
+                   fontSize="sm"
+                  textAlign="center"
+               >
+                {"Searching Users..."}
+               </Text>
               </Flex>
+              // <ChatLoading/>
             ) : (
               searchResult?.map((searchUser) => (
                 <Box
