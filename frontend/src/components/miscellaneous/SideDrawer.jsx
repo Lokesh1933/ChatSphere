@@ -52,6 +52,7 @@ import React, { useState } from 'react'
 import { ChatState } from '../../Context/ChatProvider'
 import { useHistory } from 'react-router-dom' // ✅ Add this import
 import axios from 'axios'
+import ProfileModal from './ProfileModal'
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("")
@@ -59,11 +60,11 @@ const SideDrawer = () => {
   const [loading, setLoading] = useState(false)
   const [loadingChat, setLoadingChat] = useState(false)
   
-  // ✅ Get notifications from ChatState and add history
+  // Get notifications from ChatState and add history
   const { user, setSelectedChat, chats, setChats, notifications } = ChatState()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const toast = useToast()
-  const history = useHistory() // ✅ Add this line
+  const history = useHistory() 
 
   const handleSearch = async () => {
     if (!search) {
@@ -128,7 +129,7 @@ const SideDrawer = () => {
     }
   }
 
-  // ✅ Fix logout handler
+
   const logoutHandler = () => {
     localStorage.removeItem("userInfo")
     history.push("/")
@@ -250,6 +251,8 @@ const SideDrawer = () => {
               borderColor="gray.600"
               fontFamily="'Fira Code', monospace"
             >
+              <ProfileModal user={user}>
+                
               <MenuItem
                 bg="gray.800"
                 color="gray.300"
@@ -258,6 +261,7 @@ const SideDrawer = () => {
               >
                 My Profile
               </MenuItem>
+              </ProfileModal>
               <MenuDivider borderColor="gray.600" />
               <MenuItem
                 bg="gray.800"
@@ -279,6 +283,7 @@ const SideDrawer = () => {
           bg="gray.800" 
           borderRight="2px solid" 
           borderColor="cyan.400"
+          // borderBottomWidth="1px"
         >
           <DrawerHeader
             color="cyan.400"

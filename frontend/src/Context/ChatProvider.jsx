@@ -41,7 +41,9 @@ const ChatProvider = ({ children }) => {
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem("userInfo"))
         setUser(userInfo)
-        if (!userInfo) {
+        
+        // Don't redirect if already on login page
+        if (!userInfo && window.location.pathname !== "/") {
             history.push('/')
         }
     }, [history])
