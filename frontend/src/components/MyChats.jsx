@@ -6,6 +6,7 @@ import { AddIcon } from '@chakra-ui/icons'
 import { FaUsers, FaComments, FaCode } from 'react-icons/fa'
 import ChatLoading from './ChatLoading'
 import { getSender } from '../config/ChatLogic'
+import GroupChatModal from './miscellaneous/GroupChatModal'
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState("")
@@ -54,6 +55,8 @@ const MyChats = ({ fetchAgain }) => {
       fontFamily="'Fira Code', monospace"
       boxShadow="0 4px 20px rgba(0, 255, 255, 0.1)"
       position="relative"
+      mb={6}
+      
       _before={{
         content: '""',
         position: "absolute",
@@ -83,10 +86,12 @@ const MyChats = ({ fetchAgain }) => {
         mb={2}
       >
         <Flex align="center" gap={2} color="cyan.400" fontWeight="bold">
-          <Icon as={FaCode} boxSize={5} />
-          <Text fontSize="lg">{"// My Chats"}</Text>
+          {/* <Icon as={FaCode} boxSize={5} /> */}
+          <Text fontSize="lg">{"My Chats"}</Text>
         </Flex>
-        
+
+        <GroupChatModal>
+          
         <Button
           display="flex"
           fontSize={{ base: "11px", md: "9px", lg: "11px" }}
@@ -106,9 +111,11 @@ const MyChats = ({ fetchAgain }) => {
           fontFamily="'Fira Code', monospace"
           transition="all 0.2s ease"
           px={4}
-        >
-          {"New Group"}
+          >
+          {"New Group Chat"}
         </Button>
+
+        </GroupChatModal>
       </Box>
 
       {/* Chat List Container */}
@@ -122,12 +129,15 @@ const MyChats = ({ fetchAgain }) => {
         overflow="hidden"
         border="1px solid"
         borderColor="gray.600"
+        
+        
       >
         {chats ? (
           <Stack 
             spacing={0} 
             overflowY="auto"
             maxH="70vh"
+            // pb={6}
             css={{
               '&::-webkit-scrollbar': {
                 width: '6px',
