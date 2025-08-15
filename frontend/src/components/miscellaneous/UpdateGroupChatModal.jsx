@@ -13,6 +13,7 @@ import {
 import React, { useState } from 'react'
 import { ChatState } from '../../Context/ChatProvider'
 import UserBadgeItem from '../UserAvatar/UserBadgeItem'
+import axios from 'axios'
 
 const UpdateGroupChatModal = ({fetchAgain,setFetchAgain}) => {
     const {isOpen,onOpen,onClose} = useDisclosure()
@@ -24,7 +25,43 @@ const UpdateGroupChatModal = ({fetchAgain,setFetchAgain}) => {
     const {selectedChat,setSelectedChat,user} = ChatState()
     const toast = useToast()
     const handleRemove = () => {}
-    const handleRename = () => {}
+    const handleRename = async () => {
+        if (!groupChatName) return;
+
+    try {
+      setRenameLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `/api/chat/rename`,
+        {
+          chatId: selectedChat._id,
+          chatName: groupChatName,
+        },
+        config
+      );
+
+      console.log(data._id);
+      // setSelectedChat("");
+      setSelectedChat(data);
+      setFetchAgain(!fetchAgain);
+      setRenameLoading(false);
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setRenameLoading(false);
+    }
+    setGroupChatName("");
+    }
     const handleSearch = () => {}
   return (
     <>
@@ -50,14 +87,14 @@ const UpdateGroupChatModal = ({fetchAgain,setFetchAgain}) => {
                     />
                 ))}
             </Box>
-            <FormControl>
+            <FormControl display="flex">
                <Input
                   placeholder='Chat Name'
                   mb={3}
                   value={groupChatName}
                   onChange={(e) => setGroupChatName(e.target.value)}
                />
-               <Button variant="solid" colorScheme='teal' ml={1} onClick={handleRename} isLoading={renameLoading}>Update</Button>
+               <Button variant="solid" colorScheme='teal'  ml={1} onClick={handleRename} isLoading={renameLoading}>Update</Button>
             </FormControl>
             <FormControl>
                 <Input
@@ -66,7 +103,7 @@ const UpdateGroupChatModal = ({fetchAgain,setFetchAgain}) => {
                 //    value={search}
                    onChange={(e) => handleSearch(e.target.value)}
                />
-               <Button variant="solid" colorScheme='teal' ml={1} onClick={handleRename} isLoading={renameLoading}>Update</Button>
+               
             </FormControl>
           </ModalBody>
 
