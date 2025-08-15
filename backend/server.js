@@ -37,3 +37,22 @@ app.use(errorHandler)
 app.listen(PORT,() => {
     console.log(chalk.yellow.bold(`Server is running at port ${PORT}`));
 })
+
+
+
+
+
+
+
+
+
+//for file upload
+// Add this line with other route imports
+// const fileRoutes = require('./routes/fileRoutes');
+
+// // Add this line with other route uses
+// app.use('/api/file', fileRoutes);
+
+// // Add static file serving for uploads
+// const path = require('path');
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
