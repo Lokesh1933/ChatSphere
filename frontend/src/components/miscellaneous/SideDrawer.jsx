@@ -54,6 +54,7 @@ import { useHistory } from 'react-router-dom'
 import axios from 'axios'
 import ProfileModal from './ProfileModal'
 import ChatLoading from '../ChatLoading'
+import NavbarLogo from '../NavbarLogo'
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("")
@@ -186,14 +187,15 @@ const SideDrawer = () => {
           </Button>
         </Tooltip>
 
-        <Text
+        {/* <Text
           fontSize="2xl"
           fontFamily="'Fira Code', monospace"
           color="white"
           fontWeight="bold"
         >
           Chat-Sphere
-        </Text>
+        </Text> */}
+        <NavbarLogo />
 
         <Flex align="center" gap={3}>
           {/* Notifications Menu */}

@@ -62,6 +62,7 @@ import Login from "../components/Authentication/Login";
 import Signup from "../components/Authentication/Signup";
 import { useHistory } from "react-router-dom";
 
+
 const HomePage = () => {
   const bgGradient = useColorModeValue(
     "linear(to-br, gray.900, blue.900, purple.900)",
