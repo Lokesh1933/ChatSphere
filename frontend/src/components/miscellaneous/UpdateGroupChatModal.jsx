@@ -62,7 +62,55 @@ const UpdateGroupChatModal = ({fetchAgain,setFetchAgain}) => {
     }
     setGroupChatName("");
     }
-    const handleSearch = () => {}
+    const handleSearch = async (query) => {
+        setSearch(query);
+            setSearchResult([]);
+            setLoading(false);
+        
+            // show limited users eg 20
+            if (!query) {
+              // Load all users when search is empty
+              try {
+                setLoading(true);
+                const config = {
+                  headers: {
+                    Authorization: `Bearer ${user.token}`,
+                  },
+                };
+                const { data } = await axios.get(`/api/user?limit=20`, config);
+                setLoading(false);
+                setSearchResult(data);
+              } catch (error) {
+                setLoading(false);
+              }
+              return;
+            }
+            clearTimeout(window.searchTimeout);
+            window.searchTimeout = setTimeout(async () => {
+              try {
+                setLoading(true);
+                const config = {
+                  headers: {
+                    Authorization: `Bearer ${user.token}`,
+                  },
+                };
+                const { data } = await axios.get(`/api/user?search=${query}`, config);
+                console.log(data);
+                setLoading(false);
+                setSearchResult(data);
+              } catch (error) {
+                setLoading(false);
+                setSearchResult([]);
+                toast({
+                  title: "Error Occured",
+                  description: "Failed to load search results",
+                  status: "error",
+                  duration: 2000,
+                  isClosable: true,
+                });
+              }
+            }, 300);
+    }
   return (
     <>
       <IconButton display={{ base: "flex"}} icon={<ViewIcon/>} onClick={onOpen}/>
