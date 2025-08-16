@@ -60,7 +60,7 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
                 </>
             ) : (
                 <Box display="flex" alignItems="center" justifyContent="center" height="100%">
-                    <Text fontSize="3xl" pb={3} fontFamily="Work sans" color="gray.500">Click on a user to start chatting</Text>
+                    <Text fontSize="3xl" pb={3} fontFamily="Work sans" color="white" fontWeight="bold" opacity={0.9}>Click on a user to start chatting</Text>
                 </Box>
             )
         }
