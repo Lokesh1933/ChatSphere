@@ -32,4 +32,26 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
         throw new Error(error.message)
     }
 })
-export { sendMessage }
+
+const allMessages = expressAsyncHandler(async (req, res) => {
+    const { chatId } = req.params
+
+    if (!chatId) {
+        res.status(400)
+        throw new Error("Chat ID is required")
+    }
+
+    try {
+        const messages = await Message.find({ chat: req.params.chatId })
+            .populate("sender", "name pic email")
+            .populate("chat")
+            // .exec()
+
+        res.status(200).json(messages)
+    } catch (error) {
+        res.status(400)
+        throw new Error(error.message)
+    }
+})
+
+export { sendMessage, allMessages }
