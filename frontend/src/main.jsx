@@ -9,11 +9,11 @@ import { ThemeProvider } from 'next-themes'
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <ChatProvider>
-    <BrowserRouter>
+  <BrowserRouter>
+    <ChatProvider>
      <ChakraProvider>
         <App />
      </ChakraProvider>
-    </BrowserRouter>
-  </ChatProvider>,
+    </ChatProvider>
+  </BrowserRouter>,
 )
