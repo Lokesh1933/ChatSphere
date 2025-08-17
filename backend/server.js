@@ -6,6 +6,7 @@ import chalk from "chalk"
 import userRoutes from "./routes/userRoutes.js"
 import chatRoutes from "./routes/chatRoutes.js"
 import { notFound, errorHandler } from "./middlewares/errorMiddleware.js"
+import messageRoutes from "./routes/messageRoutes.js"
 
 dotenv.config()
 connectDB()
@@ -28,6 +29,7 @@ app.get("/",(req,res) => {
 
 app.use("/api/user", userRoutes)
 app.use('/api/chat',chatRoutes)
+app.use('/api/message', messageRoutes)
 
 const PORT = process.env.PORT || 3000
 //error handling functions to handle false routes or middleware
