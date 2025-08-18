@@ -8,6 +8,10 @@ import UpdateGroupChatModal from './miscellaneous/UpdateGroupChatModal'
 import axios from 'axios'
 import './styles.css'
 import ScrollableChat from './ScrollableChat'
+import { io } from 'socket.io-client'
+
+const ENDPOINT = "http://localhost:3000"
+var socket,selectedChatCompare
 
 const SingleChat = ({fetchAgain,setFetchAgain}) => {
     const {user,selectedChat,setSelectedChat} = ChatState()
@@ -15,6 +19,8 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
     const [loading, setLoading] = useState(false)
     const [newMessage, setNewMessage] = useState("")
     const toast = useToast()
+    // Add this with your other useState declarations:
+const [socketConnected, setSocketConnected] = useState(false)
     const fetchMessages = async () => {
         if (!selectedChat) return
         try {
@@ -28,6 +34,7 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
             console.log(messages)
             setMessages(data)
             setLoading(false)
+            socket.emit("join chat", selectedChat._id)
         } catch (error) {
             toast({
                 title: "Error Occurred",
@@ -40,7 +47,21 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
     }
     useEffect(() => {
         fetchMessages()
+        selectedChatCompare = selectedChat
     }, [selectedChat])
+
+    useEffect(() => {
+        socket.on("message received", (newMessageReceived) => {
+            if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
+                // Show notification or update UI for new message in different chat
+                return;
+            } else {
+                setMessages([...messages, newMessageReceived])
+            }
+            
+        })
+    })
+
     //below is async function as there is api call being made
     const sendMessage = async (e) => {
         if (e.key === "Enter" && newMessage) {
@@ -69,6 +90,38 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
            }
         }
     }
+
+    // useEffect(() => {
+    //     if (selectedChat) {
+    //         // Only create new socket if one doesn't exist
+    //         if (!socket || socket.disconnected) {
+    //             socket = io(ENDPOINT)
+    //             socket.emit("setup", user)
+    //             socket.on("connected", () => {
+    //                 console.log("Connected to socket for chat:", selectedChat.chatName || getSender(user, selectedChat.users))
+    //                 setSocketConnected(true)
+    //             })
+    //         }
+            
+    //         // Always join the new chat room
+    //         socket.emit("join chat", selectedChat._id)
+    //         selectedChatCompare = selectedChat
+            
+    //         return () => {
+    //             // Don't disconnect, just leave the room
+    //             if (socket && selectedChatCompare) {
+    //                 socket.emit("leave chat", selectedChatCompare._id)
+    //             }
+    //         }
+    //     }
+    // }, [selectedChat, user])
+
+    useEffect(() => {
+        socket = io(ENDPOINT)
+        socket.emit("setup", user)
+        socket.on("connected", () => setSocketConnected(true));
+    }, [])
+
     const typingHandler = (e) => {
         setNewMessage(e.target.value)
         // typing indicator logic
