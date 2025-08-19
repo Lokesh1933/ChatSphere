@@ -323,58 +323,74 @@ const Signup = () => {
     }
   }
   
-  const submitHandler = async () => {
-    setLoading(true)
-    if(!name || !email || !password || !confirmpassword){
-      toast({
-        title: 'Please Fill all the Fields',
-        status: 'warning',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom',
-      })
-      setLoading(false)
-      return
+ const submitHandler = async () => {
+    setLoading(true);
+    if (!name || !email || !password || !confirmpassword) {
+        toast({
+            title: "Please Fill all the Fields",
+            status: "warning",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+        });
+        setLoading(false);
+        return;
     }
-    if(password !== confirmpassword){
-      toast({
-        title: 'Passwords Do Not Match',
-        status: 'warning',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom',
-      })
-      return
+    if (password !== confirmpassword) {
+        toast({
+            title: "Passwords Do Not Match",
+            status: "warning",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+        });
+        setLoading(false);
+        return;
     }
+
     try {
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-        },
-      }
-      const {data}  =  await axios.post("/api/user", {name,email,password,pic},config)
-      toast({
-        title: 'Registration Succesful',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom',
-      })
-      localStorage.setItem('userInfo', JSON.stringify(data))
-      setLoading(false)
-      history.push('/chats')
+        // Clear any existing session data first
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        const config = {
+            headers: {
+                "Content-type": "application/json",
+            },
+        };
+
+        const { data } = await axios.post(
+            "/api/user",
+            { name, email, password, pic },
+            config
+        );
+
+        toast({
+            title: "Registration Successful",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+        });
+
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        setLoading(false);
+        
+        // Force complete page reload
+        window.location.href = "/chats";
+        
     } catch (error) {
-      toast({
-        title: 'Error Occured!',
-        description:error.response.data.message,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom',
-      })
-      setLoading(false)
+        toast({
+            title: "Error Occurred!",
+            description: error.response.data.message,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+        });
+        setLoading(false);
     }
-  }
+};
 
   return (
     <form
@@ -385,15 +401,15 @@ const Signup = () => {
       style={{ width: "100%" }}
     >
       <VStack spacing="5" p={4}>
-        <Text 
+        {/* <Text 
           fontSize="lg" 
           color="cyan.400" 
           fontFamily="'Fira Code', monospace"
           textAlign="center"
           mb={2}
         >
-          {"// Create your developer account"}
-        </Text>
+          {"// Create your account"}
+        </Text> */}
 
         <FormControl id="first-name" isRequired>
           <FormLabel 

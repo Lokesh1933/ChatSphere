@@ -156,51 +156,66 @@ const Login = () => {
   const handleClick = () => setShow(!show);
 
   const submitHandler = async () => {
-    setLoading(true)
-    if( !email || !password){
-      toast({
-        title: 'Please Fill all the Fields',
-        status: 'warning',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom',
-      })
-      setLoading(false)
-      return
+    setLoading(true);
+    if (!email || !password) {
+        toast({
+            title: "Please Fill all the Fields",
+            status: "warning",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+        });
+        setLoading(false);
+        return;
     }
+
     try {
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-        },
-      }
-      const {data}  =  await axios.post("/api/user/login", {email,password},config)
-      toast({
-        title: 'Login Succesful',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom',
-      })
-      localStorage.setItem('userInfo', JSON.stringify(data))
-      setLoading(false)
-      history.push('/chats')
+        // Clear any existing session data first
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        const config = {
+            headers: {
+                "Content-type": "application/json",
+            },
+        };
+
+        const { data } = await axios.post(
+            "/api/user/login",
+            { email, password },
+            config
+        );
+
+        toast({
+            title: "Login Successful",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+        });
+
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        setLoading(false);
+        
+        // Force complete page reload
+        window.location.href = "/chats";
+        
     } catch (error) {
-      toast({
-        title: 'Error Occured!',
-        description:error.response.data.message,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom',
-      })
-      setLoading(false)
+        toast({
+            title: "Error Occurred!",
+            description: error.response.data.message,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+        });
+        setLoading(false);
     }
   }
 
   return (
     <VStack spacing="6" p={4}>
-      <Text 
+      {/* <Text 
         fontSize="lg" 
         color="cyan.400" 
         fontFamily="'Fira Code', monospace"
@@ -208,7 +223,7 @@ const Login = () => {
         mb={2}
       >
         {"// Access your chat space"}
-      </Text>
+      </Text> */}
 
       <FormControl id="email" isRequired>
         <FormLabel 
@@ -330,7 +345,7 @@ const Login = () => {
           boxShadow: "0 4px 12px rgba(255, 165, 0, 0.3)"
         }}
         onClick={() => {
-          setEmail("guest@example.com")
+          setEmail("guest@gmail.com")
           setPassword("123456")
         }}
       >

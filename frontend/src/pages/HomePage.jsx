@@ -127,7 +127,7 @@ const HomePage = () => {
           zIndex={1}
           mt={1}
         >
-          {"<Developer Chat Platform />"}
+          {"<A user friendly Chat Platform />"}
         </Text>
       </Box>
       

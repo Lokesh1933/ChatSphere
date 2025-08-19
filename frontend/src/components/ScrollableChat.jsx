@@ -24,16 +24,31 @@ const ScrollableChat = ({messages}) => {
                     </Tooltip>
                 )
             }
-            <span style={{backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9FBC0"}`,
+            <span
+              className="message-bubble message-text"
+              style={{
+                backgroundColor: `${
+                  m.sender._id === user._id ? "#4FD1C7" : "#2D3748"  // Teal for sent, dark gray for received
+                }`,
+                marginLeft: isSameSenderMargin(messages, m, i, user._id),
+                marginTop: isSameUser(messages, m, i, user._id) ? 3 : 10,
                 borderRadius: "20px",
                 padding: "5px 15px",
                 maxWidth: "75%",
-                marginLeft: isSameSenderMargin(messages, m, i, user._id),
-                marginRight: "5px",
-                marginTop: isSameUser(messages, m, i,user._id) ? 3 : 10,
-
-            }}>
-                {m.content}
+                color: `${
+                  m.sender._id === user._id ? "#1A202C" : "#E2E8F0"  // Dark text for sent, light for received
+                }`,
+                fontWeight: "500",
+                fontSize: "14px",
+                lineHeight: "1.4",
+                wordBreak: "break-word",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                border: `1px solid ${
+                  m.sender._id === user._id ? "#319795" : "#4A5568"  // Subtle border
+                }`
+              }}
+            >
+              {m.content}
             </span>
           </div>
         ))}

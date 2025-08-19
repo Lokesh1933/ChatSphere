@@ -35,17 +35,32 @@ const ChatProvider = ({ children }) => {
     const [selectedChat, setSelectedChat] = useState()
     const [chats, setChats] = useState([]) //to populate chats
     const [notifications, setNotifications] = useState([])
+    const [notification, setNotification] = useState([])
     
     const history = useHistory()
     
     useEffect(() => {
-        const userInfo = JSON.parse(localStorage.getItem("userInfo"))
-        setUser(userInfo)
+        // Clear all state first
+        setUser(null);
+        setSelectedChat(null);
+        setNotification([]);
+        setChats(null);
         
-        // Don't redirect if already on login page
-        if (!userInfo && window.location.pathname !== "/") {
-            history.push('/')
-        }
+        // Small delay to ensure state is cleared
+        setTimeout(() => {
+            const userInfo = localStorage.getItem("userInfo");
+            if (userInfo && userInfo !== "undefined" && userInfo !== "null") {
+                try {
+                    const parsedUser = JSON.parse(userInfo);
+                    if (parsedUser && parsedUser.token) {
+                        setUser(parsedUser);
+                    }
+                } catch (error) {
+                    console.log("Invalid user data, clearing localStorage");
+                    localStorage.removeItem("userInfo");
+                }
+            }
+        }, 100);
     }, [history])
     
     return (
@@ -58,7 +73,9 @@ const ChatProvider = ({ children }) => {
                 chats,
                 setChats,
                 notifications,
-                setNotifications
+                setNotifications,
+                notification,
+                setNotification
             }}
         >
             {children}

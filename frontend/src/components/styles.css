@@ -3,4 +3,25 @@
   flex-direction: column;
   overflow-y: scroll;
   scrollbar-width: none;
+  padding: 8px;
+}
+
+.messages::-webkit-scrollbar {
+  display: none;
+}
+
+/* Add these new styles for better message bubbles */
+.message-bubble {
+  transition: all 0.2s ease-in-out;
+}
+
+.message-bubble:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Improve text readability */
+.message-text {
+  text-shadow: none;
+  font-family: 'Fira Code', monospace;
 }

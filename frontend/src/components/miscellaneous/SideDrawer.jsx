@@ -55,6 +55,7 @@ import axios from 'axios'
 import ProfileModal from './ProfileModal'
 import ChatLoading from '../ChatLoading'
 import NavbarLogo from '../NavbarLogo'
+import { getSender } from '../../config/ChatLogic'
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("")
@@ -63,7 +64,7 @@ const SideDrawer = () => {
   const [loadingChat, setLoadingChat] = useState(false)
   
   // Get notifications from ChatState and add history
-  const { user, setSelectedChat, chats, setChats, notifications } = ChatState()
+  const { user, setSelectedChat, chats, setChats, notification, setNotification } = ChatState()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const toast = useToast()
   const history = useHistory() 
@@ -209,7 +210,7 @@ const SideDrawer = () => {
               aria-label="Notifications"
             >
               <Icon as={FaBell} />
-              {notifications && notifications.length > 0 && (
+              {notification && notification.length > 0 && (
                 <Badge
                   colorScheme="red" 
                   position="absolute" 
@@ -218,7 +219,7 @@ const SideDrawer = () => {
                   fontSize="xs"
                   borderRadius="full"
                 >
-                  {notifications.length}
+                  {notification.length}
                 </Badge>
               )}
             </MenuButton>
@@ -227,7 +228,7 @@ const SideDrawer = () => {
               borderColor="gray.600"
               fontFamily="'Fira Code', monospace"
             >
-              {!notifications || notifications.length === 0 ? (
+              {!notification || notification.length === 0 ? (
                 <MenuItem 
                   bg="gray.800" 
                   color="gray.400"
@@ -237,16 +238,39 @@ const SideDrawer = () => {
                   No new notifications
                 </MenuItem>
               ) : (
-                notifications.map((notification, index) => (
+                <>
+                  {/* Mark All as Read Button */}
                   <MenuItem
-                    key={index}
                     bg="gray.800"
-                    color="gray.300"
-                    _hover={{ bg: "gray.700", color: "cyan.400" }}
+                    color="orange.400"
+                    _hover={{ bg: "gray.700", color: "orange.300" }}
+                    fontWeight="bold"
+                    borderBottom="1px solid"
+                    borderColor="gray.600"
+                    onClick={() => setNotification([])}
                   >
-                    New message from {notification.sender?.name}
+                    Mark All as Read ({notification.length})
                   </MenuItem>
-                ))
+                  
+                  {/* Individual Notifications */}
+                  {notification.map((notif, index) => (
+                    <MenuItem
+                      key={notif._id}
+                      bg="gray.800"
+                      color="gray.300"
+                      _hover={{ bg: "gray.700", color: "cyan.400" }}
+                      onClick={() => {
+                        setSelectedChat(notif.chat)
+                        // Remove this specific notification
+                        setNotification(notification.filter((n) => n._id !== notif._id))
+                      }}
+                    >
+                      {notif.chat.isGroupChat
+                        ? `New Message in ${notif.chat.chatName}`
+                        : `New Message from ${notif.sender.name}`}
+                    </MenuItem>
+                  ))}
+                </>
               )}
             </MenuList>
           </Menu>

@@ -14,6 +14,7 @@ const MyChats = ({ fetchAgain }) => {
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState()
   const toast = useToast()
 
+  // Update the fetchChats function to sort by latestMessage:
   const fetchChats = async () => {
     if (!user) return
     
@@ -24,7 +25,15 @@ const MyChats = ({ fetchAgain }) => {
         },
       }
       const { data } = await axios.get('/api/chat', config)
-      setChats(data)
+      
+      // Sort chats by latest message timestamp (most recent first)
+      const sortedChats = data.sort((a, b) => {
+        const timeA = a.latestMessage ? new Date(a.latestMessage.createdAt) : new Date(a.createdAt);
+        const timeB = b.latestMessage ? new Date(b.latestMessage.createdAt) : new Date(b.createdAt);
+        return timeB - timeA; // Descending order (newest first)
+      });
+      
+      setChats(sortedChats)
     } catch (error) {
       toast({
         title: "Error Occurred!",
@@ -184,7 +193,14 @@ const MyChats = ({ fetchAgain }) => {
               },
             }}
           >
-            {chats.map((chat, index) => (
+            {chats && chats
+  .sort((a, b) => {
+    // Re-sort in case of real-time updates
+    const timeA = a.latestMessage ? new Date(a.latestMessage.createdAt) : new Date(a.createdAt);
+    const timeB = b.latestMessage ? new Date(b.latestMessage.createdAt) : new Date(b.createdAt);
+    return timeB - timeA;
+  })
+  .map((chat, index) => (
               <Box
                 onClick={() => setSelectedChat(chat)}
                 cursor="pointer"

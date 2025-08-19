@@ -16,7 +16,7 @@ const ENDPOINT = "http://localhost:3000"
 var socket,selectedChatCompare
 
 const SingleChat = ({fetchAgain,setFetchAgain}) => {
-    const {user,selectedChat,setSelectedChat} = ChatState()
+    const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState()
     const [messages,setMessages] = useState([])
     const [loading, setLoading] = useState(false)
     const [newMessage, setNewMessage] = useState("")
@@ -69,22 +69,32 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
         selectedChatCompare = selectedChat
     }, [selectedChat])
 
+    // Add this useEffect to refresh chats when a new message is received:
     useEffect(() => {
         socket.on("message received", (newMessageReceived) => {
             if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
-                // Show notification or update UI for new message in different chat
-                return;
+                // User is NOT in this chat - add to notifications and refresh chat list
+                if (!notification.find((n) => n._id === newMessageReceived._id)) {
+                    setNotification([newMessageReceived, ...notification])
+                }
+                setFetchAgain(!fetchAgain) // This will trigger MyChats to re-fetch and re-sort
             } else {
+                // User IS in this chat - just add message
                 setMessages([...messages, newMessageReceived])
+                setFetchAgain(!fetchAgain) // Also refresh to update the latest message preview
             }
-            
         })
-    })
+
+        return () => {
+            socket.off("message received")
+        }
+    }, [messages, notification, selectedChatCompare, fetchAgain])
 
     //below is async function as there is api call being made
     const sendMessage = async (e) => {
         if (e.key === "Enter" && newMessage) {
             socket.emit("stop typing", selectedChat._id)
+            setTyping(false)
            try {
             const config = {
                 headers: {
@@ -98,7 +108,7 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
             socket.emit("new message", data)
             setMessages([...messages, data])
             //below used for message updating
-            // setFetchAgain(!fetchAgain)
+            setFetchAgain(!fetchAgain)
            } catch (error) {
             toast({
                 title: "Error Occurred",
@@ -134,6 +144,25 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
             }
         }, timerLength)
     }
+
+    // Add this useEffect to clear notifications when chat is opened:
+    useEffect(() => {
+        if (selectedChat) {
+            // Remove notifications for this specific chat
+            setNotification(notification.filter((n) => n.chat._id !== selectedChat._id))
+        }
+    }, [selectedChat])
+
+    // Make sure socket events are properly cleaned up:
+    useEffect(() => {
+        return () => {
+            // Clean up all socket listeners when component unmounts or chat changes
+            socket.off("message received")
+            socket.off("typing")
+            socket.off("stop typing")
+        }
+    }, [selectedChat])
+
   return (
     <>
         {
@@ -182,8 +211,8 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
                         width="100%"
                         height="100%"
                         borderRadius="lg"
-                        border="1px solid"
-                        borderColor="teal.400"  
+                        // border="1px solid"
+                        // borderColor="teal.400"  
                         overflowY="hidden"
                     >
                         {/* Messages are displayed here */}
@@ -217,6 +246,10 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
                                 onChange={typingHandler}
                                 autoComplete='off'
                                 spellCheck='false'
+                                _hover={{ bg: "gray.700" }}  // Add this line
+                                _focus={{ bg: "gray.700", borderColor: "teal.400" }}  // Add this line
+                                color="white"
+                                
                             />
                         </FormControl>
                      </Box>  
