@@ -7,6 +7,7 @@ import { FaUsers, FaComments, FaCode } from 'react-icons/fa'
 import ChatLoading from './ChatLoading'
 import { getSender } from '../config/ChatLogic'
 import GroupChatModal from './miscellaneous/GroupChatModal'
+import { io } from "socket.io-client";
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState("")
@@ -40,6 +41,34 @@ const MyChats = ({ fetchAgain }) => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")))
     fetchChats()
   }, [fetchAgain,user])
+
+  useEffect(() => {
+    if (user && user.token) {
+        fetchChats()
+    }
+}, [user?.token])
+
+  // Add this useEffect in MyChats.jsx to listen for new messages
+  useEffect(() => {
+    if (!user) return;
+    
+    const socket = io("http://localhost:3000");
+    socket.emit("setup", user);
+    
+    socket.on("message received", (newMessageReceived) => {
+        // Update the specific chat's latest message
+        setChats(prevChats => {
+            return prevChats.map(chat => {
+                if (chat._id === newMessageReceived.chat._id) {
+                    return { ...chat, latestMessage: newMessageReceived };
+                }
+                return chat;
+            });
+        });
+    });
+    
+    return () => socket.disconnect();
+}, [user]);
 
   return (
     <Box

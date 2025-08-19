@@ -9,6 +9,8 @@ import axios from 'axios'
 import './styles.css'
 import ScrollableChat from './ScrollableChat'
 import { io } from 'socket.io-client'
+import Lottie from 'react-lottie'
+import animationData from '../animations/typing.json'
 
 const ENDPOINT = "http://localhost:3000"
 var socket,selectedChatCompare
@@ -18,9 +20,19 @@ const SingleChat = ({fetchAgain,setFetchAgain}) => {
     const [messages,setMessages] = useState([])
     const [loading, setLoading] = useState(false)
     const [newMessage, setNewMessage] = useState("")
+    const [socketConnected, setSocketConnected] = useState(false)
+    const [typing, setTyping] = useState(false)
+    const [isTyping, setIsTyping] = useState(false) 
     const toast = useToast()
-    // Add this with your other useState declarations:
-const [socketConnected, setSocketConnected] = useState(false)
+    const defaultOptions = {
+        loop: true,
+        autoplay: true,
+        animationData: animationData,
+        rendererSettings: {
+            preserveAspectRatio: "xMidYMid slice"
+        }
+    }
+
     const fetchMessages = async () => {
         if (!selectedChat) return
         try {
@@ -31,7 +43,7 @@ const [socketConnected, setSocketConnected] = useState(false)
             }
             setLoading(true) 
             const { data } = await axios.get(`/api/message/${selectedChat._id}`, config)
-            console.log(messages)
+            // console.log(messages)
             setMessages(data)
             setLoading(false)
             socket.emit("join chat", selectedChat._id)
@@ -45,6 +57,13 @@ const [socketConnected, setSocketConnected] = useState(false)
             })
         }
     }
+    useEffect(() => {
+        socket = io(ENDPOINT)
+        socket.emit("setup", user)
+        socket.on("connected", () => setSocketConnected(true))
+        socket.on("typing", () => setIsTyping(true));
+        socket.on("stop typing", () => setIsTyping(false));
+    }, [])
     useEffect(() => {
         fetchMessages()
         selectedChatCompare = selectedChat
@@ -65,6 +84,7 @@ const [socketConnected, setSocketConnected] = useState(false)
     //below is async function as there is api call being made
     const sendMessage = async (e) => {
         if (e.key === "Enter" && newMessage) {
+            socket.emit("stop typing", selectedChat._id)
            try {
             const config = {
                 headers: {
@@ -75,7 +95,7 @@ const [socketConnected, setSocketConnected] = useState(false)
             setNewMessage("")
             const {data} = await axios.post("/api/message", { content: newMessage, chatId: selectedChat._id }, config)
             // console.log(data)
-            
+            socket.emit("new message", data)
             setMessages([...messages, data])
             //below used for message updating
             // setFetchAgain(!fetchAgain)
@@ -91,40 +111,28 @@ const [socketConnected, setSocketConnected] = useState(false)
         }
     }
 
-    // useEffect(() => {
-    //     if (selectedChat) {
-    //         // Only create new socket if one doesn't exist
-    //         if (!socket || socket.disconnected) {
-    //             socket = io(ENDPOINT)
-    //             socket.emit("setup", user)
-    //             socket.on("connected", () => {
-    //                 console.log("Connected to socket for chat:", selectedChat.chatName || getSender(user, selectedChat.users))
-    //                 setSocketConnected(true)
-    //             })
-    //         }
-            
-    //         // Always join the new chat room
-    //         socket.emit("join chat", selectedChat._id)
-    //         selectedChatCompare = selectedChat
-            
-    //         return () => {
-    //             // Don't disconnect, just leave the room
-    //             if (socket && selectedChatCompare) {
-    //                 socket.emit("leave chat", selectedChatCompare._id)
-    //             }
-    //         }
-    //     }
-    // }, [selectedChat, user])
+   
 
-    useEffect(() => {
-        socket = io(ENDPOINT)
-        socket.emit("setup", user)
-        socket.on("connected", () => setSocketConnected(true));
-    }, [])
+   
 
     const typingHandler = (e) => {
         setNewMessage(e.target.value)
         // typing indicator logic
+        if (!socketConnected) return;
+        if (!typing) {
+            setTyping(true)
+            socket.emit("typing", selectedChat._id)
+        }
+        let lastTypingTime = new Date().getTime()
+        var timerLength = 3000
+        setTimeout(() => {
+            var timeNow = new Date().getTime()
+            var timeDiff = timeNow - lastTypingTime
+            if (timeDiff >= timerLength && typing) {
+                socket.emit("stop typing", selectedChat._id)
+                setTyping(false)
+            }
+        }, timerLength)
     }
   return (
     <>
@@ -194,6 +202,13 @@ const [socketConnected, setSocketConnected] = useState(false)
                         )}
                         {/* press enter to send message */}
                         <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+                            {isTyping? <div>
+                                <Lottie 
+                                    width={70}
+                                    style={{ marginLeft: 0,marginBottom: 15 }}
+                                    options={defaultOptions}
+                                />
+                            </div>:<></>}
                             <Input
                                 variant="filled"
                                 bg="gray.700"
