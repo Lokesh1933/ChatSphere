@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vite --legacy-peer-deps",
+    "build": "vite build --legacy-peer-deps",
     "lint": "eslint .",
     "preview": "vite preview"
   },

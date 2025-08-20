@@ -1,3 +1,4 @@
+import path from "path"
 import express from "express"
 import dotenv from "dotenv"
 import chats from "./data/data.js"
@@ -15,9 +16,7 @@ const app = express()
 //we are taking data from frontend therefore we need to tell server to accept json data
 app.use(express.json())
 
-app.get("/",(req,res) => {
-    res.send("hello")
-})
+
 //test routes
 
 // app.get("/api/chat", (req,res) => {
@@ -31,6 +30,23 @@ app.get("/",(req,res) => {
 app.use("/api/user", userRoutes)
 app.use('/api/chat',chatRoutes)
 app.use('/api/message', messageRoutes)
+
+//------------------------Deployment-----------------------------------------
+const __dirname1 = path.resolve()
+
+if(process.env.NODE_ENV === "production") {
+    //run with  node nackend/server.js 
+    app.use(express.static(path.join(__dirname1, "/frontend/dist")))
+    
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname1, "frontend", "dist", "index.html"))
+    })
+} else {
+    app.get("/",(req,res) => {
+       res.send("Chat-Sphere API is running successfully")
+    })
+}
+//-------------------------Deployment-----------------------------------------
 
 const PORT = process.env.PORT || 3000
 //error handling functions to handle false routes or middleware
