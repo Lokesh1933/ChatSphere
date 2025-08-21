@@ -9,6 +9,7 @@ import chatRoutes from "./routes/chatRoutes.js"
 import { notFound, errorHandler } from "./middlewares/errorMiddleware.js"
 import messageRoutes from "./routes/messageRoutes.js"
 import { Server } from "socket.io"
+import { fileURLToPath } from "url";
 
 dotenv.config()
 connectDB()
@@ -32,14 +33,16 @@ app.use('/api/chat',chatRoutes)
 app.use('/api/message', messageRoutes)
 
 //------------------------Deployment-----------------------------------------
-const __dirname1 = path.resolve()
+const __filename = fileURLToPath(import.meta.url);
+const __dirname1 = path.dirname(__filename);
+
 
 if(process.env.RENDER_ENV === "production") {
     //run with  node nackend/server.js 
     app.use(express.static(path.join(__dirname1, "../frontend/dist")))
     
     app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname1, "../frontend/dist/index.html"))
+        res.sendFile(path.join(__dirname1, "../frontend/dist/index.html"))
     })
 } else {
     app.get("/",(req,res) => {
