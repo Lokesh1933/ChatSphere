@@ -34,7 +34,7 @@ app.use('/api/message', messageRoutes)
 //------------------------Deployment-----------------------------------------
 const __dirname1 = path.resolve()
 
-if(process.env.NODE_ENV === "production") {
+if(process.env.RENDER_ENV === "production") {
     //run with  node nackend/server.js 
     app.use(express.static(path.join(__dirname1, "../frontend/dist")))
     
